@@ -1,0 +1,7 @@
+{
+  "name": "inbound",
+  "version": "1.0.0",
+  "dependencies": {
+  },
+  "description": "The inbound package must contain only inbound resource and inbound models, it must not expose any outbound items, note that pull or subscriptions are not outbound, but considered inbound."
+}

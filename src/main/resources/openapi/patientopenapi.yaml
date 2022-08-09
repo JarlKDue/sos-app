@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+    title: Patient Management API
+    version: 1.0.0
+    description: An API for managing Patient's
+servers:
+    -
+        url: v1
+paths:
+    /patients:
+        get:
+            tags:
+                - patient
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Patient'
+                    description: A list of patients
+            description: Returns a list of all patients
+        post:
+            requestBody:
+                description: Create the provided patient
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Patient'
+                required: true
+            tags:
+                - patient
+            responses:
+                '201':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PatientCreated'
+                    description: Created Patient Response
+            description: Adds a patient to the registered patients
+    '/patients/{id}':
+        summary: Manages a specific patient resource
+        description: This endpoint allows managing of the patient identified by the corresponding id.
+        get:
+            tags:
+                - patient
+            responses:
+                '200':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Patient'
+                            examples:
+                                PatientDTO:
+                                    value:
+                                        name: some text
+                                        age: 49
+                                        sick: true
+                    description: Response containing the requested patient.
+                '404':
+                    description: Indicates that the patient was not found.
+            operationId: getPatientById
+            summary: Fetch Patient By ID
+            description: Fetches the patient corresponding to the id provided.
+        put:
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/Patient'
+                        examples:
+                            PatientDTO:
+                                value:
+                                    name: some text
+                                    age: 28
+                                    sick: true
+                required: true
+            tags:
+                - patient
+            responses:
+                '202':
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PatientCreated'
+                            examples:
+                                PatientDTO:
+                                    value:
+                                        patient:
+                                            name: some text
+                                            age: 89
+                                            sick: true
+                                        links:
+                                            -
+                                                action: some text
+                                                link: some text
+                                            -
+                                                action: some text
+                                                link: some text
+                    description: Indicates that the patient resource has been updated as requested.
+            operationId: updatePatientById
+            summary: Update a specific patient
+            description: Updates a patient resource to match the provided patient.
+        parameters:
+            -
+                name: id
+                description: The id of the patient
+                schema:
+                    type: integer
+                in: path
+                required: true
+components:
+    schemas:
+        PatientCreated:
+            type: object
+            properties:
+                patient:
+                    $ref: '#/components/schemas/Patient'
+                links:
+                    $ref: '#/components/schemas/Links'
+        Patient:
+            type: object
+            properties:
+                name:
+                    type: string
+                age:
+                    type: integer
+                sick:
+                    type: boolean
+        Link:
+            required:
+                - action
+                - link
+            type: object
+            properties:
+                action:
+                    description: ''
+                    type: string
+                link:
+                    description: ''
+                    type: string
+        Links:
+            type: array
+            items:
+                $ref: '#/components/schemas/Link'
+            example:
+                -
+                    action: some text
+                    link: some text
+                -
+                    action: some text
+                    link: some text
+tags:
+    -
+        name: patient
+        description: Patient endpoints

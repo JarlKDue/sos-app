@@ -1,0 +1,375 @@
+openapi: 3.0.2
+info:
+  title: Patient Service
+  version: 1.0.0
+  description: A Patient API for the SOS Example Microservice
+paths:
+  /v1/: {}
+  /v1/patients:
+    summary: General endpoint for all patient resources.
+  '/v1/patients/{patientId}':
+    summary: Specific Patient Endpoint
+    description: Endpoint for managing a specific patient as defined by PatientID.
+    get:
+      tags:
+        - patient
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+              examples:
+                Patient DTO Example:
+                  value:
+                    name: some text
+                    age: 99
+                    sick: true
+          description: Patient fetched successfully.
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthorizationError'
+              examples:
+                AuthorizationErrorExample:
+                  value:
+                    resource: some text
+                    failure: some text
+          description: Not authorized
+        '404':
+          description: Patient was not found
+      operationId: getPatient
+      summary: Get specific patient based on provided ID.
+      description: >-
+        Fetches a specific patient based on the provided ID, note that patient name must also match
+        the name provided in the OAuth2 Token.
+    put:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+            examples:
+              Patient DTO Example:
+                value:
+                  name: some text
+                  age: 58
+                  sick: true
+        required: true
+      tags:
+        - patient
+      responses:
+        '202':
+          description: Patient resource updated.
+        '401':
+          description: Unauthorized.
+      operationId: updatePatient
+      summary: update a specific patient resource.
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+            examples:
+              Patient DTO Example:
+                value:
+                  name: some text
+                  age: 21
+                  sick: true
+        required: true
+      tags:
+        - patient
+      responses:
+        '201':
+          description: Patient has been created.
+      operationId: addPatient
+      summary: Create a new patient resource
+      description: Creates and adds a new patient resource to persistent storage.
+    parameters:
+      -
+        name: patientId
+        description: Patient ID as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+  /v1/cases: {}
+  /v1/treaters:
+    get:
+      tags:
+        - treater
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TreaterDTO'
+          description: Successfull request for a list of treater dtos.
+      operationId: getTreaters
+      summary: Get List of All Treaters
+      description: Returns a list of Treaters.
+  '/v1/treaters/{treaterId}':
+    get:
+      tags:
+        - treater
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TreaterDTO'
+              examples:
+                TreaterDTO:
+                  value:
+                    treater: some text
+                    treats: some text
+                    id: 41
+          description: A response returning a specific treater.
+      operationId: getTreater
+      summary: Get specific treater as identified by id
+    parameters:
+      -
+        name: treaterId
+        description: treaterId ID as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+  '/v1/treaters/{treaterId}/cases':
+    summary: cases for specific treater.
+    get:
+      tags:
+        - treater
+      responses:
+        '200':
+          description: Successfully fetched a case.
+      summary: Get all cases associated with specific treater.
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+            examples:
+              Patient DTO Example:
+                value:
+                  name: some text
+                  age: 51
+                  sick: true
+        required: true
+      tags: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: d
+      operationId: bookCaseForPatient
+      summary: Book case for patient
+    parameters:
+      -
+        name: treaterId
+        description: treaterId ID as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+  '/v1/treaters/{treaterId}/cases/{caseId}/':
+    get:
+      tags:
+        - treater
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDTO'
+              examples:
+                CaseDTOExample:
+                  value:
+                    CasePatient:
+                      name: some text
+                      age: 39
+                      sick: true
+                    CaseTreater:
+                      treater: some text
+                      treats: some text
+                      id: 73
+          description: Sucessfully fetched specific case.
+      operationId: getCase
+      summary: Get specific case as identified by caseid.
+    parameters:
+      -
+        name: treaterId
+        description: treaterId as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+      -
+        name: caseId
+        description: caseId as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+  '/v1/treaters/{treaterId}/cases/{caseId}/patient':
+    get:
+      tags:
+        - treater
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
+          description: The patient associated with the case was found and returned.
+      operationId: getCasePatient
+      summary: Get patient for specific case
+    parameters:
+      -
+        name: treaterId
+        description: treaterId ID as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+      -
+        name: caseId
+        description: caseId as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+  '/v1/cases/{caseId}':
+    summary: Endpoint detailing specific case as identified by caseId.
+    get:
+      tags:
+        - case
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CaseDTO'
+          description: Successfull Request.
+      operationId: getCaseById
+      summary: Get a specific case based on provided ID.
+    parameters:
+      -
+        name: caseId
+        description: caseId as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+  '/v1/patients/{patientId}/case':
+    summary: Manage Patient Cases
+    post:
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: string
+          description: Case booked
+      operationId: bookCase
+      summary: Book a case
+    parameters:
+      -
+        name: patientId
+        description: Patient ID as provided.
+        schema:
+          type: string
+        in: path
+        required: true
+components:
+  schemas:
+    Patient:
+      title: Root Type for Patient
+      description: A Patient Transfer Object
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          format: int32
+          type: integer
+        sick:
+          type: boolean
+      example:
+        name: John
+        age: 22
+        sick: true
+    id:
+      description: ''
+      type: object
+    AuthorizationError:
+      title: Root Type for AuthorizationError
+      description: An Error detailing what step of authorization failed.
+      type: object
+      properties:
+        resource:
+          type: string
+        failure:
+          type: string
+      example:
+        resource: /example/resource
+        failure: no authorization present
+    TreaterDTO:
+      title: Root Type for TreaterDTO
+      description: Treater data transport object.
+      type: object
+      properties:
+        treater:
+          type: string
+        treats:
+          type: string
+        id:
+          format: int32
+          type: integer
+      example:
+        treater: name
+        treats: pain
+        id: 1231
+    CaseDTO:
+      description: A CaseDTO
+      required:
+        - CasePatient
+        - CaseTreater
+      type: object
+      properties:
+        CasePatient:
+          $ref: '#/components/schemas/Patient'
+          description: ''
+        CaseTreater:
+          $ref: '#/components/schemas/TreaterDTO'
+          description: ''
+  responses:
+    FetchPatientResponse:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Patient'
+          examples:
+            PatientExample:
+              value:
+                name: some text
+                age: 99
+                sick: true
+      description: 'A Response with a fetched patient, if patient is found.'
+tags:
+  -
+    name: patient
+    description: Everything about the patients
+  -
+    name: case
+    description: Access to cases
+  -
+    name: treater
+    description: access to treaters
